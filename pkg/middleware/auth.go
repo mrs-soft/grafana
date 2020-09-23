@@ -30,6 +30,11 @@ func getApiKey(c *models.ReqContext) string {
 		return password
 	}
 
+	key := c.Query("api_key")
+	if len(key) != 0 {
+		return key
+	}
+
 	return ""
 }
 
