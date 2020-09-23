@@ -12,6 +12,7 @@ export const initialState: LocationState = {
   routeParams: {},
   replace: false,
   lastUpdated: 0,
+  queryApiKey: '',
 };
 
 export const updateLocation = createAction<LocationUpdate>('location/updateLocation');
@@ -32,13 +33,15 @@ export const locationReducer = (state: LocationState = initialState, action: Act
       query = _.omitBy(query, _.isNull);
     }
 
+    const rParams = routeParams || state.routeParams;
     return {
       url: urlUtil.renderUrl(path || state.path, query),
       path: path || state.path,
       query: { ...query },
-      routeParams: routeParams || state.routeParams,
+      routeParams: rParams,
       replace: replace === true,
       lastUpdated: new Date().getTime(),
+      queryApiKey: rParams.api_key || state.queryApiKey,
     };
   }
 

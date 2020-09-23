@@ -17,6 +17,7 @@ import { isDataQuery, isLocalUrl } from '../utils/query';
 import { FetchQueue } from './FetchQueue';
 import { ResponseQueue } from './ResponseQueue';
 import { FetchQueueWorker } from './FetchQueueWorker';
+import { getState } from '../../store/store';
 
 const CANCEL_ALL_REQUESTS_REQUEST_ID = 'cancel_all_requests_request_id';
 
@@ -356,6 +357,10 @@ export class BackendSrv implements BackendService {
   }
 
   async get<T = any>(url: string, params?: any, requestId?: string): Promise<T> {
+    const queryApiKey = getState().location.queryApiKey;
+    if (queryApiKey) {
+      params = { ...params, api_key: queryApiKey };
+    }
     return await this.request({ method: 'GET', url, params, requestId });
   }
 

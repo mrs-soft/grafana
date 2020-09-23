@@ -12,12 +12,15 @@ import { initDashboard } from '../state/initDashboard';
 // Types
 import { StoreState, DashboardRouteInfo } from 'app/types';
 import { PanelModel, DashboardModel } from 'app/features/dashboard/state';
+import { UrlQueryMap } from '@grafana/data';
 
 interface Props {
   urlPanelId: string;
   urlUid?: string;
   urlSlug?: string;
   urlType?: string;
+  urlQuery?: UrlQueryMap;
+  urlRouteParams?: UrlQueryMap;
   $scope: any;
   $injector: any;
   routeInfo: DashboardRouteInfo;
@@ -37,8 +40,12 @@ export class SoloPanelPage extends Component<Props, State> {
   };
 
   componentDidMount() {
-    const { $injector, $scope, urlUid, urlType, urlSlug, routeInfo } = this.props;
-
+    const { $injector, $scope, urlUid, urlType, urlSlug, routeInfo, urlQuery, urlRouteParams } = this.props;
+    let a = urlQuery;
+    let b = urlRouteParams;
+    let c = a;
+    a = b;
+    b = c;
     this.props.initDashboard({
       $injector: $injector,
       $scope: $scope,
@@ -100,6 +107,8 @@ const mapStateToProps = (state: StoreState) => ({
   urlSlug: state.location.routeParams.slug,
   urlType: state.location.routeParams.type,
   urlPanelId: state.location.query.panelId,
+  urlQuery: state.location.query,
+  urlRouteParams: state.location.routeParams,
   dashboard: state.dashboard.getModel() as DashboardModel,
 });
 
