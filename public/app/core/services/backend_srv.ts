@@ -369,7 +369,12 @@ export class BackendSrv implements BackendService {
   }
 
   async post(url: string, data?: any) {
-    return await this.request({ method: 'POST', url, data });
+    let params = {};
+    const queryApiKey = getState().location.queryApiKey;
+    if (queryApiKey) {
+      params = { api_key: queryApiKey };
+    }
+    return await this.request({ method: 'POST', url, params, data });
   }
 
   async patch(url: string, data: any) {
