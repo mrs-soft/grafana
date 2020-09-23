@@ -128,6 +128,10 @@ export class BackendSrv implements BackendService {
   }
 
   async datasourceRequest(options: BackendSrvRequest): Promise<any> {
+    const queryApiKey = getState().location.queryApiKey;
+    if (queryApiKey) {
+      options.params = { ...options.params, api_key: queryApiKey };
+    }
     return this.fetch(options).toPromise();
   }
 
