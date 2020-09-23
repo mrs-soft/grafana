@@ -66,6 +66,10 @@ export class BackendSrv implements BackendService {
   }
 
   fetch<T>(options: BackendSrvRequest): Observable<FetchResponse<T>> {
+    const queryApiKey = getState().location.queryApiKey;
+    if (queryApiKey) {
+      options.params = { ...options.params, api_key: queryApiKey };
+    }
     return new Observable(observer => {
       // We need to match an entry added to the queue stream with the entry that is eventually added to the response stream
       const id = uuidv4();
@@ -128,10 +132,6 @@ export class BackendSrv implements BackendService {
   }
 
   async datasourceRequest(options: BackendSrvRequest): Promise<any> {
-    const queryApiKey = getState().location.queryApiKey;
-    if (queryApiKey) {
-      options.params = { ...options.params, api_key: queryApiKey };
-    }
     return this.fetch(options).toPromise();
   }
 
