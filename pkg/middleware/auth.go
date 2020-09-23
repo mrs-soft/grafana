@@ -20,6 +20,27 @@ type AuthOptions struct {
 	ReqNoAnonynmous bool
 }
 
+func getApiKey(c *models.ReqContext) string {
+	header := c.Req.Header.Get("Authorization")
+	parts := strings.SplitN(header, " ", 2)
+	if len(parts) == 2 && parts[0] == "Bearer" {
+		key := parts[1]
+		return key
+	}
+
+	username, password, err := util.DecodeBasicAuthHeader(header)
+	if err == nil && username == "api_key" {
+		return password
+	}
+
+	key := c.Query("api_key")
+	if len(key) != 0 {
+		return key
+	}
+
+	return ""
+}
+
 func accessForbidden(c *models.ReqContext) {
 	if c.IsApiRequest() {
 		c.JsonApiErr(403, "Permission denied", nil)

@@ -19,11 +19,14 @@ import (
 	"github.com/grafana/grafana/pkg/setting"
 	"github.com/grafana/grafana/pkg/util/errutil"
 	"github.com/grafana/grafana/pkg/web"
+
+	b64 "encoding/base64"
 )
 
 const (
-	viewIndex            = "index"
-	loginErrorCookieName = "login_error"
+	ViewIndex              = "index"
+	LoginErrorCookieName   = "login_error"
+	EncodedLoginHeaderName = "custom-login-token"
 )
 
 var setIndexViewData = (*HTTPServer).setIndexViewData
@@ -115,6 +118,10 @@ func (hs *HTTPServer) LoginView(c *models.ReqContext) {
 
 	if hs.tryOAuthAutoLogin(c) {
 		return
+	}
+
+	if _, _, ok := getEncodedLoginData(c); ok {
+		c.Redirect(setting.AppSubUrl+"/", 200)
 	}
 
 	if c.IsSignedIn {
@@ -304,6 +311,18 @@ func (hs *HTTPServer) Logout(c *models.ReqContext) {
 		hs.log.Info("Successful Logout", "User", c.Email)
 		c.Redirect(hs.Cfg.AppSubURL + "/login")
 	}
+}
+
+func getEncodedLoginData(ctx *models.ReqContext) (string, string, bool) {
+	encodedData := ctx.Req.Header.Get(EncodedLoginHeaderName)
+	decodedData, _ := b64.StdEncoding.DecodeString(encodedData)
+	elements := strings.Split(string(decodedData), ":")
+	if len(elements) != 2 {
+		return "", "", false
+	}
+	name := elements[0]
+	pwd := elements[1]
+	return name, pwd, name != "" && pwd != ""
 }
 
 func (hs *HTTPServer) tryGetEncryptedCookie(ctx *models.ReqContext, cookieName string) (string, bool) {
