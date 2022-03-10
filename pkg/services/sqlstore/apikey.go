@@ -25,11 +25,11 @@ func (ss *SQLStore) GetAPIKeys(ctx context.Context, query *models.GetApiKeysQuer
 		var sess *xorm.Session
 
 		if query.IncludeExpired {
-			sess = dbSession.Limit(100, 0).
+			sess = dbSession.Limit(1000, 0).
 				Where("org_id=?", query.OrgId).
 				Asc("name")
 		} else {
-			sess = dbSession.Limit(100, 0).
+			sess = dbSession.Limit(1000, 0).
 				Where("org_id=? and ( expires IS NULL or expires >= ?)", query.OrgId, timeNow().Unix()).
 				Asc("name")
 		}
