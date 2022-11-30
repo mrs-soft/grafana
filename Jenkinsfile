@@ -14,7 +14,7 @@ pipeline {
                         def dockerfile = 'Dockerfile'
                         def customImage = docker.build(
                             "${dockerImageName}:${BUILD_NUMBER}",
-                            "--pull --no-cache -f ${dockerfile}"
+                            "--pull --no-cache -f ${dockerfile} ."
                         )
                         customImage.push()
                     }
