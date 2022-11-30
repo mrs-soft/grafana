@@ -11,9 +11,10 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("${dockerRegistry}", 'docker-registry') {
+                        def dockerfile = 'Dockerfile'
                         def customImage = docker.build(
                             "${dockerImageName}:${BUILD_NUMBER}",
-                            "--pull --no-cache"
+                            "--pull --no-cache -f ${dockerfile}"
                         )
                         customImage.push()
                     }
